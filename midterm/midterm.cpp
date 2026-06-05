@@ -2,7 +2,7 @@
 #include <string>
 #include <limits>
 using namespace std;
-
+ 
 class linkedlist {
     private:
         struct node {
@@ -10,16 +10,16 @@ class linkedlist {
             double value;
             node *next;
         };
-        string buffer; //string to convert to int
-        node *head = nullptr; //first pointer
-        node *current; //will point to the current pointer, important for traversal
+        string buffer;
+        node *head = nullptr;
+        node *current;
         
     public:
         void InsertNode() {
             cout << "INSERT NODE\n\n";
             
-            while(true) { //loop for input of the node #
-                int itemp; //temporary variable for storing the value
+            int itemp;
+            while(true) {
                 cout << "Input node #: ";
                 getline(cin, buffer);
                 if(buffer.length() == 0) {
@@ -27,13 +27,13 @@ class linkedlist {
                 }
                 else {
                     try {
-                        itemp = stoi(buffer); //converts string into int
+                        itemp = stoi(buffer);
                         if(itemp <= 0) {
                             cout << "Must be a positive number\n";
                             continue;
                         }
                     }
-                    catch(invalid_argument&) { //catches any invalid input
+                    catch(invalid_argument&) {
                         cout << "Invalid Input. Please try again\n";
                         continue;
                     }
@@ -41,22 +41,20 @@ class linkedlist {
                 }
             }
             node *search = head;
-            while(search != nullptr) { //searches for duplicates of node #
+            while(search != nullptr) {
                 if(search->node_number == itemp) {
                     cout << "Error: node #" << itemp << " already exists!\n";
-                    return; //aborts the function
+                    return;
                 }
                 search = search->next;
             }
             
-            //memory allocation
             if(head == nullptr) {
                 head = new node;
                 current = head;
                 head->next = nullptr;
             }
             else {
-                //making current look at the last node
                 current = head;
                 while(current->next != nullptr) {
                     current = current->next;
@@ -67,7 +65,7 @@ class linkedlist {
             }
             current->node_number = itemp;
             
-            while(true) { //input for the value
+            while(true) {
                 cout << "Item        : ";
                 cin >> current->value;
                 if(cin.fail()) {
@@ -82,12 +80,14 @@ class linkedlist {
                 }
                 break;
             }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Node #" << itemp << " successfully inserted.\n";
         }
         
         void DeleteNode() {
             cout << "DELETE NODE\n\n";
             int num;
-            while(true) { //input validation loop
+            while(true) {
                 cout << "Input node #: ";
                 cin >> num;
                 if(cin.fail()) {
@@ -96,13 +96,14 @@ class linkedlist {
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     continue;
                 }
-                else if(num <= 0) { //checks if input is positive
+                else if(num <= 0) {
                     cout << "Must be a positive number\n";
                     continue;
                 }
                 break;
             }
-            if(head == nullptr) { //if there are no nodes it goes here
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            if(head == nullptr) {
                 cout << "There aren't any nodes yet\n";
                 return;
             }
@@ -110,8 +111,10 @@ class linkedlist {
                 node *back = nullptr;
                 node *search = head;
                 double dtemp;
-                while(search != nullptr) { //searches for the specified node #
-                    if(search->node_number == num) { //idfk how to explain this ngl
+                bool found = false;
+                while(search != nullptr) {
+                    if(search->node_number == num) {
+                        found = true;
                         if(search->next == nullptr && back == nullptr) {
                             dtemp = search->value;
                             head = nullptr;
@@ -141,22 +144,75 @@ class linkedlist {
                     back = search;
                     search = search->next;
                 }
+                if(found) {
+                    cout << "Deleted Item : " << dtemp << "\n";
+                    cout << "Node #" << num << " successfully deleted.\n";
+                }
+                else {
+                    cout << "Node #" << num << " not found.\n";
+                }
             }
         }
         
         void DisplayNodeItems() {
             cout << "DISPLAY LIST\n\n";
-            cout << "Items in the list\n" << "(Format is \"node number : value\"\n";
+            cout << "Items in the list\n" << "(Format is \"node number : value\")\n";
             node *conductor = head;
             if(conductor == nullptr) {
-                cout << "List is empty";
+                cout << "List is empty\n";
                 return;
             }
             else {
-                while(conductor->next != nullptr) { //traverses every node
+                while(conductor != nullptr) {
                     cout << conductor->node_number << " : " << conductor->value << endl;
-                    conductor = conductor->next; //advances to next pointer
+                    conductor = conductor->next;
                 }
             }
         }
 };
+ 
+int main() {
+    linkedlist list;
+    string choice;
+ 
+    while(true) {
+        cout << "\nMAIN MENU\n\n";
+        cout << "[I] Insert Node\n";
+        cout << "[D] Delete Node\n";
+        cout << "[L] Display Node Items\n";
+        cout << "[E] Exit\n\n";
+        cout << "Choice : [ ";
+        getline(cin, choice);
+        cout << "]\n\n";
+ 
+        if(choice.length() == 0) {
+            cout << "Empty input. Please try again.\n";
+            continue;
+        }
+        if(choice.length() > 1) {
+            cout << "Invalid choice. Please enter I, D, L, or E only.\n";
+            continue;
+        }
+ 
+        char c = toupper(choice[0]);
+ 
+        if(c == 'I') {
+            list.InsertNode();
+        }
+        else if(c == 'D') {
+            list.DeleteNode();
+        }
+        else if(c == 'L') {
+            list.DisplayNodeItems();
+        }
+        else if(c == 'E') {
+            cout << "Exiting program.\n";
+            break;
+        }
+        else {
+            cout << "Invalid choice. Please enter I, D, L, or E only.\n";
+        }
+    }
+ 
+    return 0;
+}
